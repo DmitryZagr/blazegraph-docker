@@ -1,0 +1,31 @@
+version: '3.7'
+
+services:
+  blazegraph:
+    image: dmitryzagr/blazegraph:2.1.5
+    restart: always
+    ports:
+      - "9999:9999"
+    volumes:
+      - ./conf/blazegraph/default/blazegraph:/etc/default/blazegraph:ro #def values, changes in this file not affected to process
+      - ./conf/blazegraph/RWStore.properties:/etc/blazegraph/RWStore.properties:ro
+      - ./data/blazegraph:/var/lib/blazegraph:rw
+      - ./buffer/:/tmp/buffer:rw # for loading data
+    environment:
+      JVM_OPTS: "-Djava.awt.headless=true -server -Xmx8g -XX:MaxDirectMemorySize=3000m -XX:+UseG1GC" #standart options
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 15s
+    labels:
+      - autoheal=true
+
+  autoheal:
+    restart: always
+    image: willfarrell/autoheal:v0.7.0
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=autoheal
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
