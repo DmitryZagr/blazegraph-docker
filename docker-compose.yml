@@ -14,9 +14,9 @@ services:
     environment:
       JVM_OPTS: "-Djava.awt.headless=true -server -Xmx8g -XX:MaxDirectMemorySize=3000m -XX:+UseG1GC" #standart options
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
-      interval: 5s
-      timeout: 3s
+      test: ["CMD", "curl", "-f", "http://localhost:9999"]
+      interval: 1m30s
+      timeout: 5s
       retries: 3
       start_period: 15s
     labels:
